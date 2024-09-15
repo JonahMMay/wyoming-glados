@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
 WORKDIR /usr/src
 
@@ -16,7 +16,7 @@ RUN \
         setuptools \
         wheel \
     \
-    && git clone --recurse-submodules https://github.com/nalf3in/wyoming-glados \
+    && git clone --recurse-submodules https://github.com/JonahMMay/wyoming-glados \
     \
     && cd wyoming-glados \
     \
