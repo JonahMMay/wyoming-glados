@@ -8,6 +8,7 @@ import sys
 from functools import partial
 from pathlib import Path
 
+import nltk
 from nltk import data as nltk_data
 from wyoming.info import Attribution, Info, TtsProgram, TtsVoice
 from wyoming.server import AsyncServer
