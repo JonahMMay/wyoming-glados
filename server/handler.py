@@ -45,11 +45,11 @@ class GladosEventHandler(AsyncEventHandler):
         """
         # Ensure NLTK 'punkt' data is downloaded
         try:
-            nltk.data.find('tokenizers/punkt')
-            _LOGGER.debug("NLTK 'punkt' tokenizer data is already available.")
+            nltk.data.find('tokenizers/punkt_tab')
+            _LOGGER.debug("NLTK 'punkt_tab' tokenizer data is already available.")
         except LookupError:
-            _LOGGER.info("Downloading NLTK 'punkt' tokenizer data...")
-            nltk.download('punkt')
+            _LOGGER.info("Downloading NLTK 'punkt_tab' tokenizer data...")
+            nltk.download('punkt_tab')
         sentences = sent_tokenize(text)
         if not sentences:
             return AudioSegment.silent(duration=0)
