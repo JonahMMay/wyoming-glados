@@ -25,7 +25,12 @@ python __main__.py --uri tcp://0.0.0.0:10201
 
 ## Docker Image
 
-### docker-compose (recommended)
+### docker cli (recommended)
+```
+docker run --restart unless-stopped -p 10201:10201 --runtime=nvidia docker.io/captnspdr/wyoming-glados:latest
+```
+
+### docker-compose
 ```
 git clone --recurse-submodules https://github.com/JonahMMay/wyoming-glados # You will probably get a git lfs error, this is fine
 cd wyoming-glados/docker
