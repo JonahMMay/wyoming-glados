@@ -42,6 +42,13 @@ class GladosEventHandler(AsyncEventHandler):
         Returns:
             An AudioSegment containing the synthesized speech.
         """
+        # Ensure NLTK 'punkt' data is downloaded
+        try:
+            nltk.data.find('tokenizers/punkt')
+            _LOGGER.debug("NLTK 'punkt' tokenizer data is already available.")
+        except LookupError:
+            _LOGGER.info("Downloading NLTK 'punkt' tokenizer data...")
+            nltk.download('punkt')
         sentences = sent_tokenize(text)
         if not sentences:
             return AudioSegment.silent(duration=0)
