@@ -108,11 +108,11 @@ async def main() -> None:
 
     # Ensure NLTK 'punkt' data is downloaded
     try:
-        nltk_data.find("tokenizers/punkt")
+        nltk_data.find("tokenizers/punkt_tab")
         _LOGGER.debug("NLTK 'punkt' tokenizer data is already available.")
     except LookupError:
         _LOGGER.debug("Downloading NLTK 'punkt' tokenizer data...")
-        nltk_download("punkt", quiet=not args.debug)
+        nltk_download("punkt_tab", quiet=not args.debug)
 
     # Start the server
     _LOGGER.info("Starting the GLaDOS TTS server...")
