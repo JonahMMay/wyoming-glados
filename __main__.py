@@ -17,7 +17,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from gladostts.glados import tts_runner
-from gladostts.server.handler import GladosEventHandler
+from server.handler import GladosEventHandler
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ async def main() -> None:
     # Initialize GLaDOS TTS
     models_dir = Path(args.models_dir).resolve()
     glados_tts = tts_runner(
-        gpu=True, full_english=False, models_dir=str(models_dir)
+        use_p1=False, log=args.debug, models_dir=str(models_dir)
     )
 
     # Download necessary NLTK data
