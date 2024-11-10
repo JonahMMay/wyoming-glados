@@ -1,10 +1,8 @@
 """Event handler for clients of the server."""
+
 import argparse
 import logging
-import math
-import os
-import wave
-import tempfile
+from typing import Optional
 
 from wyoming.audio import AudioChunk, AudioStart, AudioStop
 from wyoming.event import Event
@@ -28,28 +26,44 @@ class GladosEventHandler(AsyncEventHandler):
         *args,
         **kwargs,
     ) -> None:
+        """Initialize the GLaDOS event handler."""
         super().__init__(*args, **kwargs)
-
         self.cli_args = cli_args
         self.wyoming_info_event = wyoming_info.event()
         self.glados_tts = glados_tts
 
-    def handle_tts_request(self, text: str, delay: float=250):
+    def handle_tts_request(self, text: str, delay: float = 250) -> AudioSegment:
+        """Generate an AudioSegment for the given text with optional delay between sentences.
+
+        Args:
+            text: The text to synthesize.
+            delay: The delay between sentences in milliseconds.
+
+        Returns:
+            An AudioSegment containing the synthesized speech.
+        """
         sentences = sent_tokenize(text)
+        if not sentences:
+            return AudioSegment.silent(duration=0)
+
         audio = self.glados_tts.run_tts(sentences[0])
         pause = AudioSegment.silent(duration=delay)
-        
-        if len(sentences) > 1:
-            for idx in range(1, len(sentences)):
-                new_line = self.glados_tts.run_tts(sentences[idx])
-                audio = audio + pause + new_line
 
-        temp_file = tempfile.NamedTemporaryFile(delete=False)
-        audio.export(temp_file.name, format = "wav")
+        for sentence in sentences[1:]:
+            new_line = self.glados_tts.run_tts(sentence)
+            audio += pause + new_line
 
-        return temp_file.name
+        return audio
 
     async def handle_event(self, event: Event) -> bool:
+        """Handle incoming events from the client.
+
+        Args:
+            event: The event to handle.
+
+        Returns:
+            True if the connection should remain open, False otherwise.
+        """
         if Describe.is_type(event.type):
             await self.write_event(self.wyoming_info_event)
             _LOGGER.debug("Sent info")
@@ -60,7 +74,7 @@ class GladosEventHandler(AsyncEventHandler):
             return True
 
         synthesize = Synthesize.from_event(event)
-        _LOGGER.debug(synthesize)
+        _LOGGER.debug("Received synthesis request: %s", synthesize)
 
         raw_text = synthesize.text
 
@@ -69,59 +83,54 @@ class GladosEventHandler(AsyncEventHandler):
 
         if self.cli_args.auto_punctuation and text:
             # Add automatic punctuation (important for some voices)
-            has_punctuation = False
-            for punc_char in self.cli_args.auto_punctuation:
-                if text[-1] == punc_char:
-                    has_punctuation = True
-                    break
+            if not any(text.endswith(punc_char) for punc_char in self.cli_args.auto_punctuation):
+                text += self.cli_args.auto_punctuation[0]
 
-            if not has_punctuation:
-                text = text + self.cli_args.auto_punctuation[0]
+        # Actual TTS synthesis
+        _LOGGER.debug("Synthesize: raw_text='%s', text='%s'", raw_text, text)
 
-        # Actual tts here
-        _LOGGER.debug("Synthesize: raw_text=%s, text='%s'", raw_text, text)
-        wav_path = None
-        if len(text) > 0:
-            wav_path = self.handle_tts_request(text)
+        if text:
+            try:
+                audio = self.handle_tts_request(text)
+            except Exception as e:
+                _LOGGER.exception("Error during TTS synthesis: %s", e)
+                # Optionally, send an error message to the client
+                return True
+        else:
+            audio = AudioSegment.silent(duration=0)
 
-        _LOGGER.debug("%s created", wav_path)
+        rate = audio.frame_rate
+        width = audio.sample_width
+        channels = audio.channels
 
-        wav_file: wave.Wave_read = wave.open(wav_path, "rb")
-        with wav_file:
-            rate = wav_file.getframerate()
-            width = wav_file.getsampwidth()
-            channels = wav_file.getnchannels()
+        await self.write_event(
+            AudioStart(
+                rate=rate,
+                width=width,
+                channels=channels,
+            ).event(),
+        )
 
+        # Audio data
+        audio_bytes = audio.raw_data
+        bytes_per_sample = width * channels
+        bytes_per_chunk = bytes_per_sample * self.cli_args.samples_per_chunk
+        num_chunks = (len(audio_bytes) + bytes_per_chunk - 1) // bytes_per_chunk  # Ceiling division
+
+        # Split into chunks and send
+        for i in range(num_chunks):
+            offset = i * bytes_per_chunk
+            chunk = audio_bytes[offset: offset + bytes_per_chunk]
             await self.write_event(
-                AudioStart(
+                AudioChunk(
+                    audio=chunk,
                     rate=rate,
                     width=width,
                     channels=channels,
                 ).event(),
             )
 
-            # Audio
-            audio_bytes = wav_file.readframes(wav_file.getnframes())
-            bytes_per_sample = width * channels
-            bytes_per_chunk = bytes_per_sample * self.cli_args.samples_per_chunk
-            num_chunks = int(math.ceil(len(audio_bytes) / bytes_per_chunk))
-
-            # Split into chunks
-            for i in range(num_chunks):
-                offset = i * bytes_per_chunk
-                chunk = audio_bytes[offset : offset + bytes_per_chunk]
-                await self.write_event(
-                    AudioChunk(
-                        audio=chunk,
-                        rate=rate,
-                        width=width,
-                        channels=channels,
-                    ).event(),
-                )
-
         await self.write_event(AudioStop().event())
         _LOGGER.debug("Completed request")
-
-        os.unlink(wav_path)
 
         return True
