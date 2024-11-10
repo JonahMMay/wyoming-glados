@@ -33,6 +33,13 @@ docker compose up -d
 ```
 
 ## Connecting to Home Assistant
+### Adding the TTS engine to Home Assistant
 1. Go to Settings -> Devices & Services
 2. Add Integration -> Wyoming Protocol
 3. Enter the IP and Port, click Submit
+4. Click Finish if it adds successfully
+
+### Modify the Voice Assist Pipeline to use the new engine
+1. Go to Settings -> Voice assistants
+2. Select the assistant/pipeline
+3. Under Text-to-speech select glados-tts
