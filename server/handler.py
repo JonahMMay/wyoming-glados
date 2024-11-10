@@ -17,6 +17,13 @@ from gladostts.glados import tts_runner
 
 _LOGGER = logging.getLogger(__name__)
 
+# Ensure NLTK 'punkt' data is downloaded
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+   _LOGGER.debug("NLTK 'punkt_tab' tokenizer data is already available.")
+except LookupError:
+    _LOGGER.info("Downloading NLTK 'punkt_tab' tokenizer data...")
+    nltk.download('punkt_tab')
 
 class GladosEventHandler(AsyncEventHandler):
     def __init__(
@@ -43,13 +50,6 @@ class GladosEventHandler(AsyncEventHandler):
         Returns:
             An AudioSegment containing the synthesized speech.
         """
-        # Ensure NLTK 'punkt' data is downloaded
-        try:
-            nltk.data.find('tokenizers/punkt_tab')
-            _LOGGER.debug("NLTK 'punkt_tab' tokenizer data is already available.")
-        except LookupError:
-            _LOGGER.info("Downloading NLTK 'punkt_tab' tokenizer data...")
-            nltk.download('punkt_tab')
         sentences = sent_tokenize(text)
         if not sentences:
             return AudioSegment.silent(duration=0)
