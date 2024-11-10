@@ -13,7 +13,7 @@ from wyoming.tts import Synthesize
 import nltk
 from nltk.tokenize import sent_tokenize
 from pydub import AudioSegment
-from gladostts.glados import tts_runner
+from gladostts.glados import TTSRunner
 
 _LOGGER = logging.getLogger(__name__)
 
