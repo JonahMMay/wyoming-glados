@@ -80,6 +80,7 @@ def ensure_model_exists(download_dir: Path, base_url: str):
 
         # Download the file
         try:
+            filename = model_file.split("/")[-1]
             model_url = base_url.format(file=model_file)
             _LOGGER.info("Downloading %s to %s", model_url, model_file_path)
             with urlopen(_quote_url(model_url)) as response, open(
