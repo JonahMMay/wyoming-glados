@@ -30,12 +30,7 @@ python __main__.py --uri tcp://0.0.0.0:10201
 
 ### docker-compose (recommended)
 ```
+git clone --recurse-submodules https://github.com/nalf3in/wyoming-glados
 cd wyoming-glados/docker
 docker compose up -d
-```
-
-### docker cli
-
-```
-docker run --restart unless-stopped -p 10201:10201 --runtime=nvidia docker.io/nalf3in/wyoming-glados:latest
 ```
