@@ -8,7 +8,7 @@ TODOS:
 - Docker image 
 - Automatic download of model files ✅ (please use download.py)
 - Readme steps for connecting this to homeassistant ✅
-- Code cleanup - in progress
+- Code cleanup ✅
 - Speedup the tts engine for rtx gpus ? See [here](https://developer.nvidia.com/tensorrt)
 
 ## How to run locally
