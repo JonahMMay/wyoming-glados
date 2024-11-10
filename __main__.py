@@ -31,7 +31,7 @@ async def main() -> None:
     parser.add_argument(
         "--models-dir",
         type=str,
-        default="./models",
+        default="./gladostts/models",
         help="Directory containing the model files",
     )
     parser.add_argument(
