@@ -25,7 +25,7 @@ RUN \
     && pip install -r requirements.txt
 
 WORKDIR /
-COPY ./docker/run.sh ./
+COPY ./run.sh ./
 
 EXPOSE 10201
 
