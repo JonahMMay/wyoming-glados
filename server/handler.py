@@ -20,7 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 # Ensure NLTK 'punkt' data is downloaded
 try:
     nltk.data.find('tokenizers/punkt_tab')
-   _LOGGER.debug("NLTK 'punkt_tab' tokenizer data is already available.")
+    _LOGGER.debug("NLTK 'punkt_tab' tokenizer data is already available.")
 except LookupError:
     _LOGGER.info("Downloading NLTK 'punkt_tab' tokenizer data...")
     nltk.download('punkt_tab')
