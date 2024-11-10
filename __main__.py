@@ -17,7 +17,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from gladostts.glados import tts_runner
-from gladostts.server.handler import GladosEventHandler
+from server.handler import GladosEventHandler
 
 _LOGGER = logging.getLogger(__name__)
 
