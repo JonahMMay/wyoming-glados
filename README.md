@@ -8,7 +8,7 @@ TODOS:
 - Docker image ✅
 - Automatic download of model files ✅ (please use download.py)
 - Download from homeassistant directly (for homassistantos users)
-- Readme steps for connecting this to homeassistant
+- Readme steps for connecting this to homeassistant - in progress
 - Add options to the docker container
 - Code cleanup
 - Speedup the tts engine for rtx gpus ? See [here](https://developer.nvidia.com/tensorrt)
@@ -34,3 +34,8 @@ git clone --recurse-submodules https://github.com/JonahMMay/wyoming-glados # You
 cd wyoming-glados/docker
 docker compose up -d
 ```
+
+## Connecting to Home Assistant
+1. Go to Settings -> Devices & Services
+2. Add Integration -> Wyoming Protocol
+3. Enter the IP and Port, click Submit
