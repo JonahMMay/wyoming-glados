@@ -5,10 +5,10 @@
 The server part is an heavily stripped down version of [wyoming-piper](https://github.com/rhasspy/wyoming-piper) and the gladostts folder is a [Git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) of R2D2FISH's repo
 
 TODOS: 
-- Docker image ✅
+- Docker image 
 - Automatic download of model files ✅ (please use download.py)
-- Readme steps for connecting this to homeassistant - in progress
-- Code cleanup
+- Readme steps for connecting this to homeassistant ✅
+- Code cleanup - in progress
 - Speedup the tts engine for rtx gpus ? See [here](https://developer.nvidia.com/tensorrt)
 
 ## How to run locally
