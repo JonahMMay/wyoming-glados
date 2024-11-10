@@ -99,7 +99,7 @@ async def main() -> None:
 
     # Initialize GLaDOS TTS
     _LOGGER.debug("Initializing GLaDOS TTS engine...")
-    glados_tts = tts_runner(
+    glados_tts = TTSRunner(
         use_p1=False,
         log=args.debug,
         models_dir=models_dir,
