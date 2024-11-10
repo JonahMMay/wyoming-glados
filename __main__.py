@@ -20,7 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 SCRIPT_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from gladostts.glados import tts_runner
+from gladostts.glados import TTSRunner
 from server.handler import GladosEventHandler
 
 
@@ -99,7 +99,7 @@ async def main() -> None:
 
     # Initialize GLaDOS TTS
     _LOGGER.debug("Initializing GLaDOS TTS engine...")
-    glados_tts = tts_runner(
+    glados_tts = TTSRunner(
         use_p1=False,
         log=args.debug,
         models_dir=models_dir,

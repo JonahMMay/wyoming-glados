@@ -13,7 +13,7 @@ from wyoming.tts import Synthesize
 import nltk
 from nltk.tokenize import sent_tokenize
 from pydub import AudioSegment
-from gladostts.glados import tts_runner
+from gladostts.glados import TTSRunner
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class GladosEventHandler(AsyncEventHandler):
         self,
         wyoming_info: Info,
         cli_args: argparse.Namespace,
-        glados_tts: tts_runner,
+        glados_tts: TTSRunner,
         *args,
         **kwargs,
     ) -> None:
