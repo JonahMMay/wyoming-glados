@@ -10,7 +10,7 @@ from wyoming.info import Describe, Info
 from wyoming.server import AsyncEventHandler
 from wyoming.tts import Synthesize
 
-import ntlk
+import nltk
 from nltk.tokenize import sent_tokenize
 from pydub import AudioSegment
 from gladostts.glados import tts_runner
