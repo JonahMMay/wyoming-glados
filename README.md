@@ -30,24 +30,9 @@ python __main__.py --uri tcp://0.0.0.0:10201
 
 ### docker-compose (recommended)
 ```
-version: "3"
-services:
-  wyoming-glados:
-    build: .
-    container_name: wyoming-glados
-    ports:
-      - 10201:10201
-    restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+cd wyoming-glados/docker
+docker compose up -d
 ```
-
-Note: there is a docker-compose file inside the docker folder of this repo you should use that contains this.
 
 ### docker cli
 
