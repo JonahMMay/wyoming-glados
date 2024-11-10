@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Utility for running GLaDOS TTS server."""
+"""Utility for running the GLaDOS TTS server."""
 
 import argparse
 import asyncio
@@ -8,9 +8,13 @@ import sys
 from functools import partial
 from pathlib import Path
 
-from nltk import download as nltk_download
+from nltk import data as nltk_data
 from wyoming.info import Attribution, Info, TtsProgram, TtsVoice
 from wyoming.server import AsyncServer
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+_LOGGER = logging.getLogger(__name__)
 
 # Ensure 'gladostts' module is importable
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -19,19 +23,19 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from gladostts.glados import tts_runner
 from server.handler import GladosEventHandler
 
-_LOGGER = logging.getLogger(__name__)
-
 
 async def main() -> None:
     """Main entry point for the GLaDOS TTS server."""
     parser = argparse.ArgumentParser(description="GLaDOS TTS Server")
     parser.add_argument(
-        "--uri", default="stdio://", help="Server URI (e.g., 'unix://', 'tcp://')"
+        "--uri",
+        default="stdio://",
+        help="Server URI (e.g., 'unix://', 'tcp://')",
     )
     parser.add_argument(
         "--models-dir",
-        type=str,
-        default="./gladostts/models",
+        type=Path,
+        default=SCRIPT_DIR / "gladostts" / "models",
         help="Directory containing the model files",
     )
     parser.add_argument(
@@ -46,21 +50,33 @@ async def main() -> None:
         help="Number of samples per audio chunk",
     )
     parser.add_argument(
-        "--debug", action="store_true", help="Enable debug logging"
+        "--debug",
+        action="store_true",
+        help="Enable debug logging",
     )
     args = parser.parse_args()
 
-    # Configure logging
-    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
+    # Set logging level based on debug flag
+    if args.debug:
+        _LOGGER.setLevel(logging.DEBUG)
+
+    _LOGGER.debug("Starting GLaDOS TTS server with arguments: %s", args)
+
+    # Validate models directory
+    models_dir = args.models_dir.resolve()
+    if not models_dir.exists():
+        _LOGGER.error("Models directory does not exist: %s", models_dir)
+        sys.exit(1)
 
     # Define TTS voices
+    voice_attribution = Attribution(
+        name="R2D2FISH", url="https://github.com/R2D2FISH/glados-tts"
+    )
     voices = [
         TtsVoice(
             name="default",
             description="Default GLaDOS voice",
-            attribution=Attribution(
-                name="R2D2FISH", url="https://github.com/R2D2FISH/glados-tts"
-            ),
+            attribution=voice_attribution,
             installed=True,
             languages=["en"],
             version=2,
@@ -73,9 +89,7 @@ async def main() -> None:
             TtsProgram(
                 name="glados-tts",
                 description="A GLaDOS TTS using Forward Tacotron and HiFiGAN.",
-                attribution=Attribution(
-                    name="R2D2FISH", url="https://github.com/R2D2FISH/glados-tts"
-                ),
+                attribution=voice_attribution,
                 installed=True,
                 voices=voices,
                 version=2,
@@ -84,21 +98,31 @@ async def main() -> None:
     )
 
     # Initialize GLaDOS TTS
-    models_dir = Path(args.models_dir).resolve()
+    _LOGGER.debug("Initializing GLaDOS TTS engine...")
     glados_tts = tts_runner(
-        use_p1=False, log=args.debug, models_dir=str(models_dir)
+        use_p1=False,
+        log=args.debug,
+        models_dir=models_dir,
     )
 
-    # Download necessary NLTK data
-    nltk_download("punkt", quiet=True)
+    # Ensure NLTK 'punkt' data is downloaded
+    try:
+        nltk_data.find("tokenizers/punkt")
+        _LOGGER.debug("NLTK 'punkt' tokenizer data is already available.")
+    except LookupError:
+        _LOGGER.debug("Downloading NLTK 'punkt' tokenizer data...")
+        nltk_download("punkt", quiet=not args.debug)
 
     # Start the server
+    _LOGGER.info("Starting the GLaDOS TTS server...")
     server = AsyncServer.from_uri(args.uri)
-
-    _LOGGER.info("GLaDOS TTS server is ready.")
-    await server.run(
-        partial(GladosEventHandler, wyoming_info, args, glados_tts)
-    )
+    try:
+        await server.run(
+            partial(GladosEventHandler, wyoming_info, args, glados_tts)
+        )
+    except Exception as e:
+        _LOGGER.exception("An error occurred while running the server: %s", e)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
@@ -106,3 +130,6 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         _LOGGER.info("Server shutdown requested. Exiting...")
+    except Exception as e:
+        _LOGGER.exception("An unexpected error occurred: %s", e)
+        sys.exit(1)
