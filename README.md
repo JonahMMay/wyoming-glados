@@ -19,10 +19,10 @@ TODOS:
 ```
 git clone --recurse-submodules https://github.com/JonahMMay/wyoming-glados # You will probably get a git lfs error, this is fine
 cd wyoming-glados
-python3 download.py # Can be done in the venv if you prefer
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -R requirements.txt
+python3 download.py
+pip install -r requirements.txt
 python __main__.py --uri tcp://0.0.0.0:10201
 ```
 
