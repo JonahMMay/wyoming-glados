@@ -1,7 +1,10 @@
 version: "3"
 services:
   wyoming-glados:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wyoming-glados
     container_name: wyoming-glados
     ports:
       - 10201:10201
