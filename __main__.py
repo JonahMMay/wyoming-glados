@@ -45,7 +45,8 @@ async def main() -> None:
                 name="R2D2FISH", url="https://github.com/R2D2FISH/glados-tts"
             ),
             installed=True,
-            languages=["en"]
+            languages=["en"],
+            version=2
         )
     ]
 
@@ -60,6 +61,7 @@ async def main() -> None:
                 ),
                 installed=True,
                 voices=voices,
+                version=2
             )
         ],
     )
