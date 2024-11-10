@@ -7,22 +7,19 @@ The server part is an heavily stripped down version of [wyoming-piper](https://g
 TODOS: 
 - Docker image ✅
 - Automatic download of model files ✅ (please use download.py)
-- Download from homeassistant directly (for homassistantos users)
-- Readme steps for connecting this to homeassistant
-- Add options to the docker container
+- Readme steps for connecting this to homeassistant - in progress
 - Code cleanup
 - Speedup the tts engine for rtx gpus ? See [here](https://developer.nvidia.com/tensorrt)
-- PyPI package ? 
 
 ## How to run locally
 
 ```
-git clone --recurse-submodules https://github.com/nalf3in/wyoming-glados # You will probably get a git lfs error, this is fine
+git clone --recurse-submodules https://github.com/JonahMMay/wyoming-glados # You will probably get a git lfs error, this is fine
 cd wyoming-glados
-python3 download.py # Can be done in the venv if you prefer
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -R requirements.txt
+python3 download.py
+pip install -r requirements.txt
 python __main__.py --uri tcp://0.0.0.0:10201
 ```
 
@@ -30,7 +27,12 @@ python __main__.py --uri tcp://0.0.0.0:10201
 
 ### docker-compose (recommended)
 ```
-git clone --recurse-submodules https://github.com/nalf3in/wyoming-glados
+git clone --recurse-submodules https://github.com/JonahMMay/wyoming-glados # You will probably get a git lfs error, this is fine
 cd wyoming-glados/docker
 docker compose up -d
 ```
+
+## Connecting to Home Assistant
+1. Go to Settings -> Devices & Services
+2. Add Integration -> Wyoming Protocol
+3. Enter the IP and Port, click Submit
