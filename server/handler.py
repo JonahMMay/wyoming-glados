@@ -30,7 +30,7 @@ class GladosEventHandler(AsyncEventHandler):
         self,
         wyoming_info: Info,
         cli_args: argparse.Namespace,
-        glados_tts: tts_runner,
+        glados_tts: TTSRunner,
         *args,
         **kwargs,
     ) -> None:
