@@ -94,4 +94,38 @@ def ensure_model_exists(download_dir: Path, base_url: str):
             else:
                 _LOGGER.error("MD5 hash mismatch after download for %s.", model_file_path)
                 if model_file_path.exists():
-                    model_file_p
+                    model_file_path.unlink()
+        except Exception:
+            _LOGGER.exception(
+                "Failed to download %s from %s",
+                model_file_path,
+                _quote_url(model_url),
+            )
+            if model_file_path.exists():
+                model_file_path.unlink()  # Remove incomplete file
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="GLaDOS TTS Model Downloader")
+    parser.add_argument(
+        "--model-dir",
+        type=Path,
+        default=Path(DEFAULT_MODEL_DIR),
+        help="Directory for the models",
+    )
+    parser.add_argument(
+        "--url",
+        type=str,
+        default=DEFAULT_URL,
+        help="URL for downloading models",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug logging",
+    )
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
+
+    ensure_model_exists(args.model_dir, args.url)
