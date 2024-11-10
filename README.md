@@ -30,26 +30,7 @@ python __main__.py --uri tcp://0.0.0.0:10201
 
 ### docker-compose (recommended)
 ```
----
-version: "3"
-services:
-  wyoming-glados:
-    image: docker.io/nalf3in/wyoming-glados:latest
-    container_name: wyoming-glados
-    ports:
-      - 10201:10201
-    restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-```
-
-### docker cli
-
-```
-docker run --restart unless-stopped -p 10201:10201 --runtime=nvidia docker.io/nalf3in/wyoming-glados:latest
+git clone --recurse-submodules https://github.com/nalf3in/wyoming-glados
+cd wyoming-glados/docker
+docker compose up -d
 ```

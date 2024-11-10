@@ -1,8 +1,7 @@
----
 version: "3"
 services:
   wyoming-glados:
-    image: docker.io/nalf3in/wyoming-glados:latest
+    build: .
     container_name: wyoming-glados
     ports:
       - 10201:10201
